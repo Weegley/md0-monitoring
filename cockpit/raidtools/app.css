@@ -1,0 +1,121 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+.page {
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+.header, .card-head, .actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
+.card {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+h1, h2 {
+  margin: 0 0 6px 0;
+}
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.05rem; }
+.muted, .hint, .log-meta {
+  color: #9ca3af;
+}
+.hint {
+  margin-top: 10px;
+  font-size: 0.92rem;
+}
+.log-meta {
+  margin-bottom: 10px;
+  font-size: 0.88rem;
+}
+button {
+  background: #2563eb;
+  color: white;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+button.small {
+  background: #374151;
+  padding: 7px 10px;
+  font-size: 0.88rem;
+}
+button:hover { filter: brightness(1.08); }
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.checkbox {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: #d1d5db;
+}
+.log {
+  margin: 0;
+  background: #020617;
+  color: #d1fae5;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 240px;
+  max-height: 420px;
+  overflow: auto;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+  tab-size: 4;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.top-actions {
+  align-items: center;
+}
+.ok { color: #86efac; }
+.warn { color: #fbbf24; }
+.err { color: #fca5a5; }
+
+
+.logs-layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 2fr) minmax(360px, 1fr);
+  align-items: start;
+}
+
+.logs-main,
+.logs-side {
+  display: grid;
+  gap: 16px;
+}
+
+.log-wide {
+  min-height: 300px;
+  max-height: 520px;
+}
+
+@media (max-width: 1100px) {
+  .logs-layout {
+    grid-template-columns: 1fr;
+  }
+}

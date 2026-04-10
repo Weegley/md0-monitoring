@@ -1,0 +1,12 @@
+{
+  "version": 0,
+  "requires": {
+    "cockpit": "195"
+  },
+  "tools": {
+    "raidtools": {
+      "label": "RAID Tools",
+      "path": "index.html"
+    }
+  }
+}
