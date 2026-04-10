@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,48 +11,48 @@
   <main class="page">
     <header class="header">
       <div>
-        <h1>RAID Tools</h1>
-        <p class="muted">md0, SMART и журналы RAID-скриптов</p>
+        <h1 id="title-main">RAID Tools</h1>
+        <p class="muted" id="subtitle-main">md0, SMART and RAID script logs</p>
       </div>
       <div class="actions top-actions">
-        <button id="refresh-all">Обновить всё</button>
+        <button id="refresh-all">Refresh all</button>
         <label class="checkbox">
           <input type="checkbox" id="auto-refresh" checked>
-          автообновление 30с
+          <span id="label-auto-refresh">auto refresh every 30s</span>
         </label>
       </div>
     </header>
 
     <section class="card">
       <div class="card-head">
-        <h2>Действия</h2>
-        <div id="action-status" class="muted">Готово</div>
+        <h2 id="title-actions">Actions</h2>
+        <div id="action-status" class="muted">Ready</div>
       </div>
       <div class="actions">
-        <button id="run-check">Запустить check_raid.sh</button>
-        <button id="run-scrub">Запустить raid_scrub_bg.sh</button>
-        <button id="stop-scrub">Остановить scrub</button>
-        <button id="run-cleanup">Очистить старые логи</button>
-        <button id="refresh-logs">Обновить только логи</button>
+        <button id="run-check">Run check_raid.sh</button>
+        <button id="run-scrub">Run raid_scrub_bg.sh</button>
+        <button id="stop-scrub">Stop scrub</button>
+        <button id="run-cleanup">Clean old logs</button>
+        <button id="refresh-logs">Refresh logs only</button>
       </div>
-      <div class="hint">Если лог за сегодня ещё не создан, подхватится последний существующий файл.</div>
+      <div class="hint" id="hint-logs-fallback">If today's log does not exist yet, the latest available log will be used.</div>
     </section>
 
     <section class="grid">
       <section class="card">
         <div class="card-head">
-          <h2>Статус mdadm</h2>
-          <button class="small" id="refresh-status">Обновить</button>
+          <h2 id="title-mdadm-status">mdadm status</h2>
+          <button class="small" id="refresh-status">Refresh</button>
         </div>
-        <pre id="mdadm-status" class="log">Загрузка...</pre>
+        <pre id="mdadm-status" class="log">Loading...</pre>
       </section>
 
       <section class="card">
         <div class="card-head">
-          <h2>.last_smart</h2>
-          <button class="small" id="refresh-last-smart">Обновить</button>
+          <h2 id="title-last-smart">.last_smart</h2>
+          <button class="small" id="refresh-last-smart">Refresh</button>
         </div>
-        <pre id="last-smart" class="log">Загрузка...</pre>
+        <pre id="last-smart" class="log">Loading...</pre>
       </section>
     </section>
 
@@ -60,30 +60,30 @@
       <div class="logs-top">
         <section class="card">
           <div class="card-head">
-            <h2>md0 log — последние строки</h2>
-            <button class="small" data-log="md0">Обновить</button>
+            <h2 id="title-log-md0">md0 log — latest lines</h2>
+            <button class="small" data-log="md0">Refresh</button>
           </div>
-          <div class="log-meta" id="meta-md0">Загрузка...</div>
-          <pre id="log-md0" class="log log-top">Загрузка...</pre>
+          <div class="log-meta" id="meta-md0">Loading...</div>
+          <pre id="log-md0" class="log log-top">Loading...</pre>
         </section>
 
         <section class="card">
           <div class="card-head">
-            <h2>scrub log — последние строки</h2>
-            <button class="small" data-log="scrub">Обновить</button>
+            <h2 id="title-log-scrub">scrub log — latest lines</h2>
+            <button class="small" data-log="scrub">Refresh</button>
           </div>
-          <div class="log-meta" id="meta-scrub">Загрузка...</div>
-          <pre id="log-scrub" class="log log-top">Загрузка...</pre>
+          <div class="log-meta" id="meta-scrub">Loading...</div>
+          <pre id="log-scrub" class="log log-top">Loading...</pre>
         </section>
       </div>
 
       <section class="card">
         <div class="card-head">
-          <h2>smart log — последние строки</h2>
-          <button class="small" data-log="smart">Обновить</button>
+          <h2 id="title-log-smart">smart log — latest lines</h2>
+          <button class="small" data-log="smart">Refresh</button>
         </div>
-        <div class="log-meta" id="meta-smart">Загрузка...</div>
-        <pre id="log-smart" class="log log-wide">Загрузка...</pre>
+        <div class="log-meta" id="meta-smart">Loading...</div>
+        <pre id="log-smart" class="log log-wide">Loading...</pre>
       </section>
     </section>
   </main>
