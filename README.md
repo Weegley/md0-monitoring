@@ -1,6 +1,6 @@
 # RAID Tools for mdadm + Cockpit
 
-A set of bash scripts and a simple Cockpit plugin for monitoring the `md0` array, reading logs, and running checks manually from a web UI.
+A set of bash scripts and a simple Cockpit plugin for monitoring the `md0` array, reading logs, cleaning old log files, and running maintenance actions manually from a web UI.
 
 ---
 
@@ -8,14 +8,14 @@ A set of bash scripts and a simple Cockpit plugin for monitoring the `md0` array
 
 This project contains two parts:
 
-1. **A script bundle for monitoring `md0`**
+1. **A script bundle for monitoring and maintaining `md0`**
 2. **A Cockpit plugin for viewing status, logs, and launching actions**
 
 It is designed for a simple home or small NAS setup based on `mdadm`, with minimal moving parts and without requiring a full systemd-based workflow.
 
 ---
 
-## 1. Script bundle for monitoring `md0`
+## 1. Script bundle for monitoring and maintenance
 
 Files:
 
@@ -23,6 +23,7 @@ Files:
 - `raid_scrub.sh`
 - `raid_scrub_bg.sh`
 - `scrub_stop.sh`
+- `cleanup_raid_logs.sh`
 
 ### `check_raid.sh`
 
@@ -76,6 +77,56 @@ What it does:
 - switches `sync_action` to `idle`
 - preserves the incomplete scrub flag for later continuation
 
+### `cleanup_raid_logs.sh`
+
+Simple log cleanup helper for the date-based log scheme.
+
+What it does:
+- compresses plain `*.log` files older than 7 days
+- removes compressed `*.log.gz` files older than 90 days
+- ignores hidden state files such as:
+  - `.last_smart`
+  - `.scrub_incomplete`
+  - `.last_scrub_ym`
+
+Why it is compatible with the current setup:
+- your logs already rotate naturally by date in the filename
+- this script only handles stale log files
+- it does not touch the current day's files or the state/flag files
+
+Recommended location:
+
+```bash
+/usr/local/sbin/cleanup_raid_logs.sh
+```
+
+Example content:
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+LOG_DIR="/var/log/raid"
+
+[ -d "$LOG_DIR" ] || exit 0
+
+find "$LOG_DIR" -maxdepth 1 -type f -name '*.log' -mtime +7 -exec gzip -f {} \;
+find "$LOG_DIR" -maxdepth 1 -type f -name '*.log.gz' -mtime +90 -delete
+```
+
+Optional daily cron entry:
+
+```bash
+/etc/cron.daily/cleanup-raid-logs
+```
+
+with:
+
+```sh
+#!/bin/sh
+/usr/local/sbin/cleanup_raid_logs.sh
+```
+
 ---
 
 ## 2. Cockpit plugin
@@ -93,6 +144,7 @@ It can launch:
 - `check_raid.sh`
 - `raid_scrub_bg.sh`
 - `scrub_stop.sh`
+- `cleanup_raid_logs.sh`
 
 Features:
 - if today's log does not exist yet, the plugin falls back to the latest available log
@@ -125,6 +177,7 @@ Features:
 /usr/local/sbin/raid_scrub.sh
 /usr/local/sbin/raid_scrub_bg.sh
 /usr/local/sbin/scrub_stop.sh
+/usr/local/sbin/cleanup_raid_logs.sh
 ```
 
 Permissions:
@@ -134,6 +187,7 @@ chmod +x /usr/local/sbin/check_raid.sh
 chmod +x /usr/local/sbin/raid_scrub.sh
 chmod +x /usr/local/sbin/raid_scrub_bg.sh
 chmod +x /usr/local/sbin/scrub_stop.sh
+chmod +x /usr/local/sbin/cleanup_raid_logs.sh
 ```
 
 ---
@@ -144,6 +198,13 @@ chmod +x /usr/local/sbin/scrub_stop.sh
 # check raid health
 0 0 * * * root /usr/local/sbin/check_raid.sh
 @reboot root sleep 60 && /usr/local/sbin/check_raid.sh
+```
+
+Optional cleanup:
+
+```sh
+# /etc/cron.daily/cleanup-raid-logs
+/usr/local/sbin/cleanup_raid_logs.sh
 ```
 
 ---
@@ -192,7 +253,8 @@ Then reload the Cockpit page in your browser.
 │   ├── check_raid.sh
 │   ├── raid_scrub.sh
 │   ├── raid_scrub_bg.sh
-│   └── scrub_stop.sh
+│   ├── scrub_stop.sh
+│   └── cleanup_raid_logs.sh
 └── cockpit
     └── raidtools
         ├── manifest.json
@@ -213,6 +275,7 @@ Main goals:
 - keep a simple SMART history
 - control monthly scrub behavior
 - run or stop checks manually
+- clean old logs safely
 - view everything from Cockpit without extra complexity
 
 ---
@@ -229,7 +292,7 @@ MIT License. See `LICENSE`.
 
 # RAID Tools for mdadm + Cockpit
 
-Набор bash-скриптов и простой плагин для Cockpit для контроля массива `md0`, просмотра логов и ручного запуска проверок из веб-интерфейса.
+Набор bash-скриптов и простой плагин для Cockpit для контроля массива `md0`, просмотра логов, очистки старых лог-файлов и ручного запуска обслуживания из веб-интерфейса.
 
 ---
 
@@ -237,14 +300,14 @@ MIT License. See `LICENSE`.
 
 Проект состоит из двух частей:
 
-1. **Комплект скриптов для контроля `md0`**
+1. **Комплект скриптов для контроля и обслуживания `md0`**
 2. **Плагин Cockpit для просмотра состояния, логов и запуска действий**
 
 Проект задуман как лёгкий набор инструментов для домашнего или небольшого NAS на `mdadm`, без лишней обвязки и без обязательного перевода всего в systemd.
 
 ---
 
-## 1. Комплект скриптов для контроля `md0`
+## 1. Комплект скриптов для контроля и обслуживания
 
 Файлы:
 
@@ -252,6 +315,7 @@ MIT License. See `LICENSE`.
 - `raid_scrub.sh`
 - `raid_scrub_bg.sh`
 - `scrub_stop.sh`
+- `cleanup_raid_logs.sh`
 
 ### `check_raid.sh`
 
@@ -305,6 +369,56 @@ MIT License. See `LICENSE`.
 - переводит `sync_action` в `idle`
 - сохраняет флаг незавершённого scrub для последующего продолжения
 
+### `cleanup_raid_logs.sh`
+
+Простой скрипт очистки логов для схемы с датой в имени файла.
+
+Что делает:
+- сжимает обычные `*.log` старше 7 дней
+- удаляет сжатые `*.log.gz` старше 90 дней
+- не трогает скрытые служебные файлы, такие как:
+  - `.last_smart`
+  - `.scrub_incomplete`
+  - `.last_scrub_ym`
+
+Почему он совместим с текущей схемой:
+- у тебя логи уже естественно “ротируются” по дате в имени файла
+- этот скрипт работает только со старыми логами
+- он не трогает текущие дневные файлы и не затрагивает служебные state/flag файлы
+
+Рекомендуемое размещение:
+
+```bash
+/usr/local/sbin/cleanup_raid_logs.sh
+```
+
+Пример содержимого:
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+LOG_DIR="/var/log/raid"
+
+[ -d "$LOG_DIR" ] || exit 0
+
+find "$LOG_DIR" -maxdepth 1 -type f -name '*.log' -mtime +7 -exec gzip -f {} \;
+find "$LOG_DIR" -maxdepth 1 -type f -name '*.log.gz' -mtime +90 -delete
+```
+
+Необязательный ежедневный запуск:
+
+```bash
+/etc/cron.daily/cleanup-raid-logs
+```
+
+с содержимым:
+
+```sh
+#!/bin/sh
+/usr/local/sbin/cleanup_raid_logs.sh
+```
+
 ---
 
 ## 2. Плагин Cockpit
@@ -322,6 +436,7 @@ MIT License. See `LICENSE`.
 - `check_raid.sh`
 - `raid_scrub_bg.sh`
 - `scrub_stop.sh`
+- `cleanup_raid_logs.sh`
 
 Особенности:
 - если лог за текущий день ещё не создан, подхватывается последний доступный
@@ -354,6 +469,7 @@ MIT License. See `LICENSE`.
 /usr/local/sbin/raid_scrub.sh
 /usr/local/sbin/raid_scrub_bg.sh
 /usr/local/sbin/scrub_stop.sh
+/usr/local/sbin/cleanup_raid_logs.sh
 ```
 
 Права:
@@ -363,6 +479,7 @@ chmod +x /usr/local/sbin/check_raid.sh
 chmod +x /usr/local/sbin/raid_scrub.sh
 chmod +x /usr/local/sbin/raid_scrub_bg.sh
 chmod +x /usr/local/sbin/scrub_stop.sh
+chmod +x /usr/local/sbin/cleanup_raid_logs.sh
 ```
 
 ---
@@ -373,6 +490,13 @@ chmod +x /usr/local/sbin/scrub_stop.sh
 # check raid health
 0 0 * * * root /usr/local/sbin/check_raid.sh
 @reboot root sleep 60 && /usr/local/sbin/check_raid.sh
+```
+
+Необязательная очистка логов:
+
+```sh
+# /etc/cron.daily/cleanup-raid-logs
+/usr/local/sbin/cleanup_raid_logs.sh
 ```
 
 ---
@@ -421,7 +545,8 @@ sudo cp -r raidtools/* /usr/local/share/cockpit/raidtools/
 │   ├── check_raid.sh
 │   ├── raid_scrub.sh
 │   ├── raid_scrub_bg.sh
-│   └── scrub_stop.sh
+│   ├── scrub_stop.sh
+│   └── cleanup_raid_logs.sh
 └── cockpit
     └── raidtools
         ├── manifest.json
@@ -442,6 +567,7 @@ sudo cp -r raidtools/* /usr/local/share/cockpit/raidtools/
 - иметь простую историю SMART
 - контролировать ежемесячный scrub
 - запускать и останавливать проверки вручную
+- безопасно очищать старые логи
 - смотреть всё это из Cockpit без лишней сложности
 
 ---
