@@ -2,6 +2,8 @@
 
 A set of bash scripts and a simple Cockpit plugin for monitoring the `md0` array, reading logs, cleaning old log files, and running maintenance actions manually from a web UI.
 
+**Russian version:** [jump to the Russian section](#russian-version--русская-версия)
+
 ---
 
 ## Overview
@@ -266,6 +268,8 @@ Initial implementation and iterative refinement were created with ChatGPT assist
 MIT License. See `LICENSE`.
 
 ---
+
+## Russian version / Русская версия
 
 # RAID Tools for mdadm + Cockpit
 
