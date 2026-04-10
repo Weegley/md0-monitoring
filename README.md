@@ -243,29 +243,6 @@ Then reload the Cockpit page in your browser.
 
 ---
 
-## Suggested repository structure
-
-```text
-.
-├── README.md
-├── LICENSE
-├── scripts
-│   ├── check_raid.sh
-│   ├── raid_scrub.sh
-│   ├── raid_scrub_bg.sh
-│   ├── scrub_stop.sh
-│   └── cleanup_raid_logs.sh
-└── cockpit
-    └── raidtools
-        ├── manifest.json
-        ├── index.html
-        ├── app.js
-        ├── app.css
-        └── README.md
-```
-
----
-
 ## Project goals
 
 The project is intentionally lightweight and practical.
@@ -532,29 +509,6 @@ sudo cp -r raidtools/* /usr/local/share/cockpit/raidtools/
 ```
 
 После этого обнови страницу Cockpit в браузере.
-
----
-
-## Рекомендуемая структура репозитория
-
-```text
-.
-├── README.md
-├── LICENSE
-├── scripts
-│   ├── check_raid.sh
-│   ├── raid_scrub.sh
-│   ├── raid_scrub_bg.sh
-│   ├── scrub_stop.sh
-│   └── cleanup_raid_logs.sh
-└── cockpit
-    └── raidtools
-        ├── manifest.json
-        ├── index.html
-        ├── app.js
-        ├── app.css
-        └── README.md
-```
 
 ---
 
