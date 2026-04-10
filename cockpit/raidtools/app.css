@@ -4,9 +4,13 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   background: #0f172a;
   color: #e5e7eb;
+  overflow-x: hidden;
 }
 .page {
-  padding: 20px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 16px;
   display: grid;
   gap: 16px;
 }
@@ -20,9 +24,10 @@ body {
 .grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
 }
 .card {
+  min-width: 0;
   background: #111827;
   border: 1px solid #374151;
   border-radius: 14px;
@@ -97,25 +102,61 @@ button:disabled {
 
 
 .logs-layout {
+  width: 100%;
+  min-width: 0;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 2fr) minmax(360px, 1fr);
+}
+
+.logs-top {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
 }
 
-.logs-main,
-.logs-side {
-  display: grid;
-  gap: 16px;
+.logs-top > .card,
+.logs-layout > .card {
+  min-width: 0;
+}
+
+.log-top {
+  min-height: 320px;
+  max-height: 320px;
 }
 
 .log-wide {
-  min-height: 300px;
-  max-height: 520px;
+  min-height: 320px;
+  max-height: 560px;
 }
 
-@media (max-width: 1100px) {
-  .logs-layout {
+.log {
+  max-width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .logs-top {
     grid-template-columns: 1fr;
+  }
+
+  .log-top {
+    max-height: 420px;
+  }
+}
+
+
+@media (max-width: 800px) {
+  .page {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .log {
+    min-height: 220px;
   }
 }

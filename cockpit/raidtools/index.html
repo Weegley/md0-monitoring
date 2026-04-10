@@ -32,6 +32,7 @@
         <button id="run-check">Запустить check_raid.sh</button>
         <button id="run-scrub">Запустить raid_scrub_bg.sh</button>
         <button id="stop-scrub">Остановить scrub</button>
+        <button id="run-cleanup">Очистить старые логи</button>
         <button id="refresh-logs">Обновить только логи</button>
       </div>
       <div class="hint">Если лог за сегодня ещё не создан, подхватится последний существующий файл.</div>
@@ -56,36 +57,34 @@
     </section>
 
     <section class="logs-layout">
-      <div class="logs-main">
+      <div class="logs-top">
         <section class="card">
           <div class="card-head">
             <h2>md0 log — последние строки</h2>
             <button class="small" data-log="md0">Обновить</button>
           </div>
           <div class="log-meta" id="meta-md0">Загрузка...</div>
-          <pre id="log-md0" class="log log-wide">Загрузка...</pre>
+          <pre id="log-md0" class="log log-top">Загрузка...</pre>
         </section>
 
-        <section class="card">
-          <div class="card-head">
-            <h2>smart log — последние строки</h2>
-            <button class="small" data-log="smart">Обновить</button>
-          </div>
-          <div class="log-meta" id="meta-smart">Загрузка...</div>
-          <pre id="log-smart" class="log log-wide">Загрузка...</pre>
-        </section>
-      </div>
-
-      <aside class="logs-side">
         <section class="card">
           <div class="card-head">
             <h2>scrub log — последние строки</h2>
             <button class="small" data-log="scrub">Обновить</button>
           </div>
           <div class="log-meta" id="meta-scrub">Загрузка...</div>
-          <pre id="log-scrub" class="log">Загрузка...</pre>
+          <pre id="log-scrub" class="log log-top">Загрузка...</pre>
         </section>
-      </aside>
+      </div>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>smart log — последние строки</h2>
+          <button class="small" data-log="smart">Обновить</button>
+        </div>
+        <div class="log-meta" id="meta-smart">Загрузка...</div>
+        <pre id="log-smart" class="log log-wide">Загрузка...</pre>
+      </section>
     </section>
   </main>
 

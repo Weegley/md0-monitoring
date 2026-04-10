@@ -5,6 +5,14 @@ function setText(id, text) {
   document.getElementById(id).textContent = text;
 }
 
+function scrollLogToBottom(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  requestAnimationFrame(() => {
+    el.scrollTop = el.scrollHeight;
+  });
+}
+
 function setActionStatus(text, cls = "muted") {
   const el = document.getElementById("action-status");
   el.textContent = text;
@@ -93,9 +101,11 @@ fi
     }
 
     setText(target, body || "Пустой вывод");
+    scrollLogToBottom(target);
   } catch (e) {
     setText(meta, "Ошибка чтения");
     setText(target, formatError(e));
+    scrollLogToBottom(target);
   }
 }
 
@@ -137,6 +147,10 @@ function setupButtons() {
 
   document.getElementById("stop-scrub").addEventListener("click", () =>
     runAction("scrub_stop.sh", ["/usr/local/sbin/scrub_stop.sh"])
+  );
+
+  document.getElementById("run-cleanup").addEventListener("click", () =>
+    runAction("cleanup_raid_logs.sh", ["/usr/local/sbin/cleanup_raid_logs.sh"])
   );
 
   document.querySelectorAll("button[data-log]").forEach(btn => {
