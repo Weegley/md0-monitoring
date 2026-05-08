@@ -13,6 +13,7 @@ RAID_LOG="$LOG_DIR/md0_$DAY.log"
 SMART_LOG="$LOG_DIR/smart_$DAY.log"
 LAST_LOG="$LOG_DIR/.last_smart"
 SCRUB_LOG="$LOG_DIR/scrub_$DAY.log"
+MDADM_CACHE="$LOG_DIR/.last_mdadm_detail"
 
 # Флаги/метки scrub
 SCRUB_FLAG="$LOG_DIR/.scrub_incomplete"
@@ -21,7 +22,7 @@ CURRENT_YM=$(date '+%Y-%m')
 TODAY_DAY=$(date '+%-d')
 
 # Создаём ежедневные лог-файлы заранее
-touch "$RAID_LOG" "$SMART_LOG" "$SCRUB_LOG"
+touch "$RAID_LOG" "$SMART_LOG" "$SCRUB_LOG" "MDADM_CACHE"
 
 get_disk_key() {
     local disk real id name
@@ -69,12 +70,39 @@ get_disk_serial() {
 echo "$DATE - Starting RAID status check for $MD_DEVICE" >> "$RAID_LOG"
 
 if command -v mdadm >/dev/null 2>&1 && [ -e "$MD_DEVICE" ]; then
-    RAID_STATUS=$(mdadm --detail "$MD_DEVICE" 2>/dev/null | awk -F ' : ' '/State :/ {print $2; exit}')
+  RAID_DETAIL=$(mdadm --detail "$MD_DEVICE" 2>&1)
+  RAID_RC=$?
+
+  {
+    echo "Last update: $DATE"
+    echo "Command: mdadm --detail $MD_DEVICE"
+    echo "Exit code: $RAID_RC"
+    echo
+    echo "$RAID_DETAIL"
+  } > "$MDADM_CACHE.tmp.$$"
+  mv -f "$MDADM_CACHE.tmp.$$" "$MDADM_CACHE"
+
+  if [ "$RAID_RC" -eq 0 ]; then
+    RAID_STATUS=$(awk -F ' : ' '/State :/ {print $2; exit}' <<< "$RAID_DETAIL")
     [ -n "$RAID_STATUS" ] || RAID_STATUS="State unknown"
     echo "$DATE - State: $RAID_STATUS" >> "$RAID_LOG"
+  else
+    echo "$DATE - mdadm --detail failed for $MD_DEVICE (rc=$RAID_RC)" >> "$RAID_LOG"
+    echo "$RAID_DETAIL" >> "$RAID_LOG"
+  fi
 else
-    echo "$DATE - mdadm or $MD_DEVICE not available" >> "$RAID_LOG"
+  echo "$DATE - mdadm or $MD_DEVICE not available" >> "$RAID_LOG"
+
+  {
+    echo "Last update: $DATE"
+    echo "Command: mdadm --detail $MD_DEVICE"
+    echo "Exit code: 127"
+    echo
+    echo "mdadm or $MD_DEVICE not available"
+  } > "$MDADM_CACHE.tmp.$$"
+  mv -f "$MDADM_CACHE.tmp.$$" "$MDADM_CACHE"
 fi
+
 
 # --- Определяем реальные диски массива для SMART ---
 RAID_DISKS=()
