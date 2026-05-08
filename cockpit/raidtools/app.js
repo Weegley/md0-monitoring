@@ -185,13 +185,16 @@ function formatError(e) {
 
 async function loadMdadmStatus() {
   try {
-    const out = await run(["mdadm", "--detail", "/dev/md0"]);
+    const out = await run([
+      "bash", "-lc",
+      `if [ -f /var/log/raid/.last_mdadm_detail ]; then cat /var/log/raid/.last_mdadm_detail; else echo 'Кэш mdadm ещё не создан. Запустите check_raid.sh.'; fi`
+    ]);
+
     setText("mdadm-status", out || T.empty);
   } catch (e) {
     setText("mdadm-status", formatError(e));
   }
 }
-
 async function loadLastSmart() {
   try {
     const out = await run([
